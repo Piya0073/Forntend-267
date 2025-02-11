@@ -1,0 +1,14 @@
+<!--book.ejs -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Book</title>
+    </head>
+    <body>
+        <h1>Book</h1>
+        <p>Author : <%= book.author</p>
+        <a href="/update/<%= book.id%>">Edit</a>
+        <a href="/delete/<%= book.id%>">delete</a>
+        <a href="/">back to LIST</a>
+    </body>
+</html>
