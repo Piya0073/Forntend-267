@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 const path = require("path");
 // Base URL for the API
 // const base_url = "https://api.example.com";
-const base_url = "http://localhost:3000";
+const base_url = "http://localhost:5000";
 
 // Set the template engine
 app.set('view engine', 'ejs');
@@ -16,10 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serve static files
-app.use(express.static(path.join(__dirname, '/public')));  // ใช้ static files จากโฟลเดอร์ 'public'
+app.use(express.static(path.join(__dirname, 'public')));  // ใช้ static files จากโฟลเดอร์ 'public'
 
 // ตั้งค่าการใช้งาน views และ template engine
-// กำหนด path ของ views
+app.set('views', path.join(__dirname, 'views'));  // กำหนด path ของ views
 app.set('view engine', 'ejs');
 
 app.get("/", async (req, res) => {
