@@ -1,15 +1,14 @@
-// Description: Node.js HTML Client
-// Requires: npm install express ejs axios body-parser
+// Description: Node.js HTML client
+// requires: npm install express ejs axios body-parser
 
 const express = require('express');
 const axios = require('axios');
-const path = require('path');
-const bodyParser = require('body-parser');
-
 const app = express();
-
-// Base URL for API (เปลี่ยนเป็นพอร์ต 5500)
-const baseUrl = 'http://localhost:5500';
+var bodyParser = require('body-parser');
+const path = requre("path");
+// Base URL for the API
+// const base_url = "https://api.example.com";
+const base_url = "http://localhost:5000";
 
 // Set the template engine
 app.set('view engine', 'ejs');
@@ -17,83 +16,79 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serve static files
-app.use(express.static(path.resolve(__dirname, 'public')));
-
-// Home route
+app.use("views", Path2D.join(__dirname,"/public/views/"));
+app.set('views', __dirname + '/views');
+app.set('view engine','ejs');
 app.get("/", async (req, res) => {
     try {
-        const response = await axios.get(`${baseUrl}/books`);
+        const response = await axios.get(base_url + '/books');
         res.render("books", { books: response.data });
-    } catch (error) {
-        console.error("Error fetching books:", error.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-// Get book by ID
-app.get("/books/:id", async (req, res) => {
-    try {
-        const response = await axios.get(`${baseUrl}/books/${req.params.id}`);
-        res.render("book", { book: response.data });
     } catch (err) {
-        console.error(`Error fetching book with ID ${req.params.id}:`, err.message);
+        console.error(err);
         res.status(500).send('Error');
     }
 });
 
-// Render create form
+app.get("/book/:id", async (req, res) => {
+    try {
+        const response = await axios.get(base_url + '/books/' + req.params.id);
+        res.render("book", { book: response.data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error');
+    }
+});
+
 app.get("/create", (req, res) => {
     res.render("create");
 });
 
-// Create new book
 app.post("/create", async (req, res) => {
     try {
         const data = { title: req.body.title, author: req.body.author };
-        await axios.post(`${baseUrl}/books`, data);
+        await axios.post(base_url + '/books', data);
         res.redirect("/");
     } catch (err) {
-        console.error("Error creating book:", err.message);
+        console.error(err);
         res.status(500).send('Error');
     }
 });
 
-// Render update form
 app.get("/update/:id", async (req, res) => {
     try {
-        const response = await axios.get(`${baseUrl}/books/${req.params.id}`);
+        const response = await axios.get(
+        base_url + '/books/' + req.params.id);
         res.render("update", { book: response.data });
     } catch (err) {
-        console.error(`Error fetching book for update (ID: ${req.params.id}):`, err.message);
+        console.error(err);
         res.status(500).send('Error');
     }
 });
 
-// Update book
+// อัปเดตข้อมูลหนังสือ
 app.post("/update/:id", async (req, res) => {
     try {
         const data = { title: req.body.title, author: req.body.author };
-        await axios.put(`${baseUrl}/books/${req.params.id}`, data);
-        res.redirect("/");
+        await axios.put(base_url + '/books'+ req.params, data);
+        res.redirect('/');
     } catch (err) {
-        console.error(`Error updating book (ID: ${req.params.id}):`, err.message);
+        console.error(err);
         res.status(500).send('Error');
     }
 });
 
-// Delete book
+// ลบข้อมูลหนังสือ
 app.get("/delete/:id", async (req, res) => {
     try {
-        await axios.delete(`${baseUrl}/books/${req.params.id}`);
-        res.redirect("/");
+        await axios.delete(base_url +'/books/'+ req.params.id);
+            res.redirect("/");
     } catch (err) {
-        console.error(`Error deleting book (ID: ${req.params.id}):`, err.message);
+        console.error(err);
         res.status(500).send('Error');
     }
 });
 
-// Start server
-const PORT = process.env.PORT || 5500;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// เริ่มต้นเซิร์ฟเวอร์
+app.listen(5500, () => {
+    console.log('Server started on port 5500');
 });
