@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 const path = require("path");
 // Base URL for the API
 // const base_url = "https://api.example.com";
-const base_url = "http://localhost:5000";
+const base_url = "http://localhost:3000";
 
 // Set the template engine
 app.set('view engine', 'ejs');
@@ -16,9 +16,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serve static files
-app.use("views", Path2D.join(__dirname,"/public/views/"));
-app.set('views', __dirname + '/views');
-app.set('view engine','ejs');
+app.use(express.static(path.join(__dirname, '/public')));  // ใช้ static files จากโฟลเดอร์ 'public'
+
+// ตั้งค่าการใช้งาน views และ template engine
+// กำหนด path ของ views
+app.set('view engine', 'ejs');
+
 app.get("/", async (req, res) => {
     try {
         const response = await axios.get(base_url + '/books');
@@ -56,8 +59,7 @@ app.post("/create", async (req, res) => {
 
 app.get("/update/:id", async (req, res) => {
     try {
-        const response = await axios.get(
-        base_url + '/books/' + req.params.id);
+        const response = await axios.get(base_url + '/books/' + req.params.id);
         res.render("update", { book: response.data });
     } catch (err) {
         console.error(err);
@@ -69,7 +71,7 @@ app.get("/update/:id", async (req, res) => {
 app.post("/update/:id", async (req, res) => {
     try {
         const data = { title: req.body.title, author: req.body.author };
-        await axios.put(base_url + '/books'+ req.params, data);
+        await axios.put(base_url + '/books/' + req.params.id, data);  // แก้ไขเป็น req.params.id
         res.redirect('/');
     } catch (err) {
         console.error(err);
@@ -80,8 +82,8 @@ app.post("/update/:id", async (req, res) => {
 // ลบข้อมูลหนังสือ
 app.get("/delete/:id", async (req, res) => {
     try {
-        await axios.delete(base_url +'/books/'+ req.params.id);
-            res.redirect("/");
+        await axios.delete(base_url + '/books/' + req.params.id);
+        res.redirect("/");
     } catch (err) {
         console.error(err);
         res.status(500).send('Error');
